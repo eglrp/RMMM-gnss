@@ -230,9 +230,6 @@ boolean_t send_at_wait_response(char *atc, char * resp, int max_retries){
     read_at(buffer, sizeof(buffer));
   }
 
-  if( !status )
-    GPS_DEBUG_MSG(( "[CLOE_demo] \"%s\" not found\r\n", resp));
-
   return status;
 }
 
