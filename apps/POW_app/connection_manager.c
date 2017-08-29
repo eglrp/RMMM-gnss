@@ -60,22 +60,16 @@ boolean_t activate_tracker(){
 
   gpOS_task_delay(5*1000*1000*gpOS_timer_ticks_per_usec()); //1 segundo?
 
-  GPS_DEBUG_MSG(("[CLOE_demo] ocm1: activating tracking\r\n"));
-
   if(!at_check_eps_registration_status()){
     report_error(" - No network");
     return FALSE;
   }
-
-  GPS_DEBUG_MSG(("[CLOE_demo] ocm1: network ok\r\n"));
 
   if(!at_check_pdp_context(PDN)){
     report_error(" - No PDN");
     at_activate_pdp(PDN);
     return FALSE;
   }
-
-  GPS_DEBUG_MSG(("[CLOE_demo] ocm1: pdn ok\r\n"));
 
   if(at_is_socket_closed(SOCKET_ID)){
     if(!openSocket()){
@@ -107,8 +101,6 @@ boolean_t send_positions()
 
   flush_rx();
 
-  GPS_DEBUG_MSG(("[CLOE_demo] ocm2: sending positions\r\n"));
-
   at_check_signal_quality();
   at_check_pin_status();
 
@@ -117,15 +109,11 @@ boolean_t send_positions()
     return FALSE;
   }
 
-  GPS_DEBUG_MSG(("[CLOE_demo] ocm2: network ok\r\n"));
-
   if(!at_check_pdp_context(PDN)){
     report_error(" - No PDN");
     at_activate_pdp(PDN);
     return FALSE;
   }
-
-  GPS_DEBUG_MSG(("[CLOE_demo] ocm2: pdn ok\r\n"));
 
   if(at_is_socket_closed(SOCKET_ID)){
     if(!openSocket()){
