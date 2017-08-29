@@ -1,0 +1,313 @@
+MEMORY
+{
+  code(rx)                        : org = LR_CODE_BASE, len = LR_CODE_SIZE
+
+  nvm_data(rx)                    : org = XR_NVM_DATA_REGION, len = XR_NVM_DATA_SIZE
+
+  itcm_area(rx)                   : org = 0x0, len = 0x40000 - DATA_TCM_SIZE
+
+  dtcm_area(w)                    : org = DATA_TCM_START, len = DATA_TCM_SIZE
+
+  sram2(rw)                       : org = 0x30100000, len = 0x800
+
+  sram(rw)                        : org = 0x40000000, len = 0x7C00
+
+  sram_stdby(rw)                  : org = 0x40007C00, len = 0x400
+
+  #if( OS_HEAP_AREA_SIZE == 0)
+  os_stack_area(w)                : org = DATA_TCM_START + DATA_TCM_SIZE, len = 0
+  #else
+  os_stack_area(w)                : org = OS_HEAP_AREA_START, len = OS_HEAP_AREA_SIZE
+  #endif
+}
+
+__dtcm_area_limit__           = DATA_TCM_START + DATA_TCM_SIZE;
+
+#if( OS_HEAP_AREA_SIZE != 0)
+__os_heap_area_start__        = ORIGIN(os_stack_area);
+#endif
+__os_stack_area_limit__       = ORIGIN(os_stack_area) + LENGTH(os_stack_area);
+
+_code_alignment_ = 16;
+
+SECTIONS
+{
+  . = 0;
+  .text = .;
+
+  .text :
+  {
+    __code_area_start__ = .;
+
+    KEEP( *(.reset_vector_area))
+  } > code
+
+  constructors :
+  {
+    PROVIDE(__init_array_start = 0);
+    KEEP( *(SORT(.init_array.*)))
+    KEEP( *(.init_array))
+    PROVIDE(__init_array_end = 0);
+  } > code
+
+  destructors :
+  {
+    PROVIDE(__fini_array_start = 0);
+    KEEP( *(SORT(.fini_array.*)))
+    KEEP( *(.fini_array))
+    PROVIDE(__fini_array_end = 0);
+  } > code
+
+  .ARM.extab :
+  {
+    *(.ARM.extab* .gnu_linkonce.armextab.*)
+  } > code
+
+  .text :
+  {
+    *( .text.startup.*)
+    *(.glue_7t)
+    *(.glue_7)
+    *(.gcc*)
+
+    *.o                       ( GENERIC_NORELOC_REGION)
+  } > code
+
+  .eh_frame :
+  {
+    . = ALIGN(16);
+    __code_load_reg_start__ = .;
+  } > code
+
+  .itcm_text :
+  {
+    // OS20 specific region
+    __code_exec_reg_start__ = .;
+    KEEP( *(.os20_vector_table))
+
+    *.o                       ( OS_ISR_REGION)
+    *interrupti.o             ( .text* .rodata*)
+    *kerneli.o                ( .text* .rodata*)
+    *ostime.o                 ( .text* .rodata*)
+
+    // Region for ISRs for generic, OS and BSP needed code
+    *svc.o                    ( .text* .rodata*)
+    *svci.o                   ( .text* .rodata*)
+    *                         ( OS_FAST_REGION)
+    *.o                       ( GENERIC_CODE_ISR_REGION)
+    *.o                       ( GENERIC_DATA_ISR_REGION)
+    *.o                       ( OS_ISR_REGION)
+    *.o                       ( MTU_ISR_REGION)
+    *.o                       ( VIC_ISR_REGION)
+    *.o                       ( DATA_ISR_REGION)
+
+    // Region for ISRs for GNSS mandatory LLDs and related services
+    *.o                       ( GNSSDSP_ISR_REGION)
+    *.o                       ( SSP_ISR_REGION)
+
+    // Region for ISRs for optional LLDs and related services
+    #if ( DR_ON == 1 )
+    *.o                       ( CAN_ISR_REGION)
+    *.o                       ( I2C_ISR_REGION)
+    #endif
+    *.o                       ( ADC_ISR_REGION)
+    //*.o                       ( EFT_ISR_REGION)
+    //*.o                       ( MSP_ISR_REGION)
+    *.o                       ( UART_ISR_REGION)
+    *.o                       ( USB_ISR_REGION)
+    *.o                       ( GPIO_ISR_REGION)
+    *svc_usb.o                ( .rodata*)
+
+    // OS20 to OS wrapper code needed in ISRs
+    *OS20toOS_*.o              ( .text* .rodata*)
+
+    // GCC Lib code needed in ISRs
+    *_udivsi3.o                ( .text* .rodata*)
+    *_arm_muldivdf3.o          ( .text* .rodata*)
+
+    // NVM handling related
+    #ifdef NVM_RAM
+    *gps_nvm_backup.o          ( .text* .rodata*)
+    #endif
+
+    #ifdef NVM_NOR
+    // Driver
+    *lld_fsmc*.o               ( .text* .rodata*)
+    // service
+    *svc_fsmc.o               ( FLASH_MODIFY_REGION)
+    #endif
+
+    #if defined( NVM_SQI )
+    // Driver
+    *lld_sqi*.o                ( .text* .rodata*)
+    // service
+    *svc_sqi.o                ( FLASH_MODIFY_REGION)
+    #endif
+  } > itcm_area AT > code
+
+  #if ( GNSSLIB_FAST == 1 )
+  .itcm_text :
+  {
+    *                          ( GNSS_FAST_REGION)
+  } > itcm_area AT > code
+  #endif
+
+  #if ( STAGPS_FAST == 1 )
+  .itcm_text :
+  {
+    *stagps_derivative.o       ( .text* .rodata*)
+    *stagps_gravity.o          ( .text* .rodata*)
+
+    *fixpoint.o                ( STAGPS_FAST_REGION)
+  } > itcm_area AT > code
+  #endif
+
+  #if ( GNSSLIB_FAST == 1 ) || ( STAGPS_FAST == 1 )
+  .itcm_text :
+  {
+    // These libraries must be in ITCM to let ISR be executed during flash erases
+    // NOTE: No C library call can be done in ISRs!!!
+    //*libgcc.a:*.o             ( .text .rodata)
+
+    *libgcc.a:*_thumb*_case_*.o         ( .text* .rodata*)
+    *libgcc.a:*divsi3*.o                ( .text* .rodata*)
+    *libgcc.a:*_dvmd_tls*.o             ( .text* .rodata*)
+    *libgcc.a:*di3.o                    ( .text* .rodata*)
+    *libgcc.a:*divmod*.o                ( .text* .rodata*)
+    *libgcc.a:*bpabi.o                  ( .text* .rodata*)
+    *libgcc.a:*_clzsi2.o                ( .text* .rodata*)
+
+    *lib*_s.a:*memcpy*.o                ( .text* .rodata*)
+    *libgcc.a:*truncdfsf2.o             ( .text* .rodata*)
+    *libgcc.a:*addsubdf3.o              ( .text* .rodata*)
+    *libgcc.a:*muldivdf3.o              ( .text* .rodata*)
+    *libgcc.a:*cmpdf2.o                 ( .text* .rodata*)
+    *libgcc.a:*fixdfsi.o                ( .text* .rodata*)
+    *libgcc.a:*fixunsdfsi.o             ( .text* .rodata*)
+    *libgcc.a:*cmpsf2.o                 ( .text* .rodata*)
+    *libgcc.a:*muldivsf3.o              ( .text* .rodata*)
+
+    *libm.a:*s_cos.o                    ( .text* .rodata*)
+    *libm.a:*s_sin.o                    ( .text* .rodata*)
+    *libm.a:*w_sqrt.o                   ( .text* .rodata*)
+    *libm.a:*s_scalbn.o                 ( .text* .rodata*)
+  } > itcm_area AT > code
+
+  .ARM.exidx : ALIGN(16)
+  {
+    PROVIDE( __exidx_start = .);
+    *( .ARM.exidx* .gnu_linkonce.armexidx.*)
+    PROVIDE( __exidx_end = .);
+  } > itcm_area AT > code
+  #endif
+
+  #if ( GNSSLIB_FAST != 1 ) && ( STAGPS_FAST != 1 )
+  .itcm_text :
+  {
+    *position.o                ( .data .data.* .ramtext .bss .bss.*)
+    *fix.o                     ( .data .data.* .ramtext .bss .bss.*)
+    *waas_correction.o         ( .data .data.* .ramtext .bss .bss.*)
+    *waas_iono.o               ( .data .data.* .ramtext .bss .bss.*)
+
+    #if ( DR_ON == 1 )
+    *dr_api.o                  ( .data .data.* .ramtext .bss .bss.*)
+    *dr_fix.o                  ( .data .data.* .ramtext .bss .bss.*)
+    *dr_kal.o                  ( .data .data.* .ramtext .bss .bss.*)
+    *dr_pr.o                   ( .data .data.* .ramtext .bss .bss.*)
+    *dr_plugin.o               ( .data .data.* .ramtext .bss .bss.*)
+    *dr_sensors_api.o          ( .data .data.* .ramtext .bss .bss.*)
+    *stbin.o                   ( .data .data.* .ramtext .bss .bss.*)
+    *xtal_manager.o            ( .data .data.* .ramtext .bss .bss.*)
+    #endif
+  } > itcm_area AT > code
+  #endif
+
+  . = ALIGN(16);
+  __code_exec_reg_end__ = .;
+
+  __data_load_reg_start__ = __code_load_reg_start__ + __code_exec_reg_end__;
+
+  .data : ALIGN(16)
+  {
+    __data_exec_reg_start__ = .;
+    *(.data)
+    . = ALIGN(16);
+    *(.data.*)
+    . = ALIGN(16);
+    *(.ramtext)
+    . = ALIGN(16);
+    __data_exec_reg_end__ = .;
+  } > dtcm_area AT > code
+
+  .bss : ALIGN(16)
+  {
+    __bss_start__ = .;
+    *(.bss)
+    . = ALIGN(16);
+    *(.bss.*)
+    . = ALIGN(16);
+    *(COMMON)
+    . = ALIGN(16);
+    __bss_end__ = .;
+  } > dtcm_area
+
+  __dtcm_area_end__ = .;
+
+  #if( OS_HEAP_AREA_SIZE == 0)
+  __os_heap_area_start__      = .;
+  #endif
+
+  .rodata :
+  {
+    *(.rodata*)
+    . = ALIGN(4);
+  } > code
+
+  #if ( GNSSLIB_FAST != 1 ) && ( STAGPS_FAST != 1 )
+  .ARM.exidx :
+  {
+    PROVIDE( __exidx_start = .);
+    *( .ARM.exidx* .gnu_linkonce.armexidx.*)
+    . = ALIGN(4);
+    PROVIDE( __exidx_end = .);
+  } > code
+  #endif
+
+  // Must be placed after the last filling in "code". Used for custom use of sram and sram2 area.
+  . = ALIGN(16);
+  __data_sram2_load_reg_start__ = .;
+
+  .nvm (NOLOAD) :
+  {
+    __nvm_data_start__ = .;
+    *(NVM_DATA_REGION)
+    __nvm_data_end__ = .;
+  } > nvm_data
+
+  .sram_stdby_area(NOLOAD):
+  {
+    __sram_stdby_start__ = .;
+    *(SRAM_STDBY_AREA)
+    __sram_stdby_end__ = .;
+  } > sram_stdby
+
+  .sram2_area : ALIGN(16)
+  {
+     __sram2_start__ = .;
+     *(SRAM2_AREA)
+     . = ALIGN(16);
+     __sram2_end__ = .;
+  } > sram2 AT > code
+
+   __data_sram_load_reg_start__ = __data_sram2_load_reg_start__ + (__sram2_end__ - __sram2_start__);
+  .sram_area : ALIGN(16)
+  {
+     __sram_start__ = .;
+     *(SRAM_AREA)
+     . = ALIGN(16);
+     __sram_end__ = .;
+  } > sram AT > code
+}
+
+PROVIDE(end = .);
+_end =      .;

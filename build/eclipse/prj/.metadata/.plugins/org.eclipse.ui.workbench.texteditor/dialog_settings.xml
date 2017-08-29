@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="false" key="isRegEx"/>
+		<item value="config" key="selection"/>
+		<item value="false" key="casesensitive"/>
+		<item value="false" key="incremental"/>
+		<item value="false" key="wrap"/>
+		<item value="false" key="wholeword"/>
+		<list key="findhistory">
+			<item value="post"/>
+			<item value="at_activate_pdp"/>
+			<item value="at_check_pdp_context"/>
+			<item value="config"/>
+			<item value="fleet"/>
+			<item value="2 *"/>
+			<item value="n_positions"/>
+			<item value="HEX"/>
+		</list>
+		<list key="replacehistory">
+			<item value="CLOE_demo"/>
+			<item value="demo_app_process"/>
+			<item value="main_activity"/>
+			<item value="SOCKET_ID"/>
+			<item value="positions_memory"/>
+			<item value="MAX_READ_BUFFER_SIZE"/>
+			<item value="backup_array_size"/>
+			<item value="[POW_app]"/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="284" key="DIALOG_WIDTH"/>
+		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
+		<item value="390" key="DIALOG_HEIGHT"/>
+		<item value="1178" key="DIALOG_X_ORIGIN"/>
+		<item value="163" key="DIALOG_Y_ORIGIN"/>
+	</section>
+</section>

@@ -1,0 +1,52 @@
+19:25:25 **** Build of configuration SAL SQI(SQI) for project gnssapp_freertos_gae ****
+make -j4 all 
+Generating scatter file for builder
+Generating C compiler via file for builder
+Generating assembler via file for builder
+Generating linker via file for builder
+Assembling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os/freeRTOS/portable/gnu/FR_vectors.asm
+Assembling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/sta8090/gpsapp/gnu/crt0_FR.asm
+Assembling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os/freeRTOS/portable/gnu/interrupti.asm
+Assembling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os/freeRTOS/portable/gnu/stacki.asm
+Assembling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os/freeRTOS/portable/gnu/svci.asm
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/modules/fat/ff.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/modules/fat/syscall.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/modules/gnssapp_plugins/gnssapp_plugins.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/modules/gnssapp_plugins/nmea_ext_plugin.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/modules/gnssapp_plugins/rtcm_plugin.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/modules/gnssapp_plugins/stagps_plugin.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/modules/gnssapp_plugins/waas_plugin.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/modules/in_out/in_out.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/modules/nmea/nmea.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/modules/nmea/nmea_support.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/modules/sdlog/sdlog.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/modules/shutdn/shutdn_ctrl.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/adc/svc_adc.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/can/svc_can.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/fsmc/svc_fsmc.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/fsw/svc_fsw.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/gpio/svc_gpio.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/i2c/svc_i2c.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/mcu/svc_mcu.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/msp/svc_msp.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/mtu/svc_mtu.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/pwr/svc_pwr.c
+E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/mtu/svc_mtu.c:19:2: warning: #warning "PRCC.CLKCTRL must not be controlled by MTU service" [-Wcpp]
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/sdi/svc_sdi.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/sqi/svc_sqi.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/ssp/svc_ssp.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/uart/svc_uart.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/usb/svc_usb.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/os_svc/svc_ver.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/sta8090/frontend/frontend.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/sta8090/gpsapp/gnssapp.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/sta8090/gpsapp/main_FR.c
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/sta8090/gpsapp/retarget.c
+E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/sta8090/gpsapp/gnssapp.c:63:19: fatal error: modem.h: No such file or directory
+compilation terminated.
+make: *** [../build/build.mk:133: E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/build/eclipse/prj/gnssapp_freertos_gae/sal_sqi_sqi/objs/gnssapp.o] Error 1
+make: *** Waiting for unfinished jobs....
+Compiling E:/dev/stm_gnss_sdk/sta8090_gnssapp_230_84914_jeuss/sta8090_gnssapp_230_84914/sta8090/platforms/platform_common.c
+
+19:25:49 Build Finished (took 23s.780ms)
+

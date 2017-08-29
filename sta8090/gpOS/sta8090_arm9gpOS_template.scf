@@ -1,0 +1,67 @@
+GPSAPP_LR LR_CODE_BASE LR_CODE_SIZE
+{
+  CODE LR_CODE_BASE LR_CODE_SIZE
+  {
+    *.o                       (reset_vector_area, +First)
+    *.o                       (InRoot$$Sections)
+
+    .ANY                      ( +RO)
+  }
+
+  ITCM_AREA 0x0 (0x40000-DATA_TCM_SIZE)
+  {
+    *.o                       ( os20_vector_table, +First)
+    
+    *.o                       ( OS_ISR_REGION)
+    interrupti.o              ( +RO)
+    kerneli.o                 ( +RO)
+    ostime.o                  ( +RO)
+    
+    ; Region for ISRs for generic, OS and BSP needed code
+    *.o                       ( GENERIC_CODE_ISR_REGION)
+    *.o                       ( GENERIC_DATA_ISR_REGION)
+    *.o                       ( MTU_ISR_REGION)
+    *.o                       ( VIC_ISR_REGION)
+    *.o                       ( DATA_ISR_REGION)
+    
+    ; OS20 to OS wrapper code needed in ISRs
+    *OS20toOS_*.o             ( +RO)
+
+    ; ARM Lib code needed in ISRs
+    aeabi_sdiv.o              ( +RO)
+    
+  }
+
+  ITCM_AREA_END (0x40000-DATA_TCM_SIZE) EMPTY 0x0
+  {
+  }
+
+  DTCM_AREA DATA_TCM_START DATA_TCM_SIZE
+  {
+    *.o                       ( +RW, +ZI)
+    ;os20_usb.o                ( +RO-DATA)
+  }
+
+  #if( OS_HEAP_AREA_SIZE == 0)
+  OS_HEAP_AREA +0 EMPTY 0x0
+  {
+  }
+
+  OS_STACK_AREA (DATA_TCM_START+DATA_TCM_SIZE) EMPTY 0x0
+  {
+  }
+
+  #else
+  OS_HEAP_AREA OS_HEAP_AREA_START EMPTY 0x0
+  {
+  }
+
+  OS_STACK_AREA (OS_HEAP_AREA_START+OS_HEAP_AREA_SIZE) EMPTY 0x0
+  {
+  }
+  #endif
+
+  DTCM_AREA_LIMIT (DATA_TCM_START+DATA_TCM_SIZE) EMPTY 0x0
+  {
+  }
+}

@@ -1,0 +1,367 @@
+/*********************************************************************
+*
+*       OnProjectLoad
+*
+* Function description
+*   Project load routine. Required.
+*
+**********************************************************************
+*/
+void OnProjectLoad (void) {
+
+  unsigned int PC;
+  unsigned int PC_temp;
+
+  Project.SetDevice( "ARM9" );
+  Project.SetHostIF( "USB", "" );
+  Project.SetTargetIF( "JTAG" );
+  Project.SetTIFSpeed( "500 kHz" );
+  Project.AddSvdFile( "ARM9.svd" );
+
+  Edit.SysVar( VAR_CONNECT_MODE, CM_ATTACH );
+
+  /* Indicate here your project path */
+  Project.SetRootPath( "C:/Work/workspace/sta8090_gnssapp_230_84914" );
+
+  /* Indicate here the path and name of your axf/elf file */
+  File.Open( "C:/Work/workspace/sta8090_gnssapp_230_84914/bin/sta8090_gnssapp_demo_soc_sqi_sqi_fr_gae.elf" );
+
+  Debug.SetResetMode( RM_RESET_HALT );
+  Debug.SetConnectMode( CM_ATTACH_HALT );
+
+  Debug.Start();
+
+  PC = Elf.GetBaseAddr();
+  // Remove bootloader offset if present
+  PC = PC & 0xFF000000;
+
+  if (PC == 0x10000000)
+  {
+
+    File.Open( "build/scripts/sta8090/ozn_sqi_reset.axf" );
+
+    Exec.Download( "build/scripts/sta8090/ozn_sqi_reset.axf" );
+
+    Exec.Reset();
+
+    PC_temp = Elf.GetBaseAddr();
+
+    Target.SetReg( "PC", PC_temp );
+
+    Debug.RunTo( "_sys_exit" );
+
+    File.Open( "C:/Work/workspace/sta8090_gnssapp_230_84914/bin/sta8090_gnssapp_demo_soc_sqi_sqi_fr_gae.elf" );
+  }
+
+  Exec.Reset();
+
+  if ((PC == 0x20000000)||(PC == 0x24000000))
+  {
+    /* In case of NOR and RAM, enable FSMC */
+    unsigned int reg_value;
+
+    reg_value = Target.ReadU32(0x5200f040);
+    reg_value = reg_value | 0x8000000;
+    Target.WriteU32(0x5200f040,reg_value);
+
+    reg_value = Target.ReadU32(0x5200f044);
+    reg_value = reg_value | 0x8000000;
+    Target.WriteU32(0x5200f044,reg_value);
+
+    if (PC == 0x20000000)
+    {
+      /* Reset CS0 to default values */
+      Target.WriteU32(0x50020000,0x10db);
+      Target.WriteU32(0x50020004,0xFFFFFFF);
+    }
+
+    if (PC == 0x24000000)
+    {
+      /* Reset CS1 to default values */
+      Target.WriteU32(0x50020008,0x10db);
+      Target.WriteU32(0x5002000c,0xFFFFFFF);
+    }
+  }
+
+  Target.SetReg( "PC", PC );
+
+  View.Memory( PC);
+}
+
+/*********************************************************************
+*
+*      TargetReset
+*
+* Function description
+*   Replaces the default target device reset routine. Optional.
+*
+* Notes
+*   This example demonstrates the usage when
+*   debugging a RAM program on a Cortex-M target device
+*
+**********************************************************************
+*/
+void TargetReset (void) {
+
+}
+
+/*********************************************************************
+*
+*       BeforeTargetReset
+*
+* Function description
+*   Event handler routine. Optional.
+*
+**********************************************************************
+*/
+/*
+void BeforeTargetReset (void) {
+}
+*/
+
+/*********************************************************************
+*
+*       AfterTargetReset
+*
+* Function description
+*   Event handler routine. Optional.
+*
+**********************************************************************
+*/
+
+void AfterTargetReset (void) {
+
+  unsigned int PC;
+  unsigned int PC_temp;
+
+  PC = Elf.GetBaseAddr();
+  // Remove bootloader offset if present
+  PC = PC & 0xFF000000;
+
+  if (PC == 0x10000000)
+  {
+
+    File.Open( "build/scripts/sta8090/ozn_sqi_reset.axf" );
+
+    Exec.Download( "build/scripts/sta8090/ozn_sqi_reset.axf" );
+
+    Exec.Reset();
+
+    PC_temp = Elf.GetBaseAddr();
+
+    Target.SetReg( "PC", PC_temp );
+
+    Debug.RunTo( "_sys_exit" );
+
+    File.Open( "C:/Work/workspace/sta8090_gnssapp_230_84914/bin/sta8090_gnssapp_demo_soc_sqi_sqi_fr_gae.elf" );
+  }
+
+  Exec.Reset();
+
+  if ((PC == 0x20000000)||(PC == 0x24000000))
+  {
+    /* In case of NOR and RAM, enable FSMC */
+    unsigned int reg_value;
+
+    reg_value = Target.ReadU32(0x5200f040);
+    reg_value = reg_value | 0x8000000;
+    Target.WriteU32(0x5200f040,reg_value);
+
+    reg_value = Target.ReadU32(0x5200f044);
+    reg_value = reg_value | 0x8000000;
+    Target.WriteU32(0x5200f044,reg_value);
+
+    if (PC == 0x20000000)
+    {
+      /* Reset CS0 to default values */
+      Target.WriteU32(0x50020000,0x10db);
+      Target.WriteU32(0x50020004,0xFFFFFFF);
+    }
+
+    if (PC == 0x24000000)
+    {
+      /* Reset CS1 to default values */
+      Target.WriteU32(0x50020008,0x10db);
+      Target.WriteU32(0x5002000c,0xFFFFFFF);
+    }
+  }
+
+  Target.SetReg( "PC", PC );
+}
+
+/*********************************************************************
+*
+*       DebugStart
+*
+* Function description
+*   Replaces the default debug session startup routine. Optional.
+*
+**********************************************************************
+*/
+/*
+void DebugStart (void) {
+}
+*/
+
+/*********************************************************************
+*
+*       TargetConnect
+*
+* Function description
+*   Replaces the default target device connect routine. Optional.
+*
+**********************************************************************
+*/
+/*
+void TargetConnect (void) {
+}
+*/
+
+/*********************************************************************
+*
+*       BeforeTargetConnect
+*
+* Function description
+*   Event handler routine. Optional.
+*
+**********************************************************************
+*/
+/*
+void BeforeTargetConnect (void) {
+}
+*/
+
+/*********************************************************************
+*
+*       AfterTargetConnect
+*
+* Function description
+*   Event handler routine. Optional.
+*
+**********************************************************************
+*/
+/*
+void AfterTargetConnect (void) {
+}
+*/
+
+/*********************************************************************
+*
+*       TargetDownload
+*
+* Function description
+*   Replaces the default program download routine. Optional.
+*
+**********************************************************************
+*/
+
+void TargetDownload (void) {
+    Util.Log("No target download.");
+}
+
+
+/*********************************************************************
+*
+*       BeforeTargetDownload
+*
+* Function description
+*   Event handler routine. Optional.
+*
+**********************************************************************
+*/
+/*
+void BeforeTargetDownload (void) {
+}
+*/
+
+/*********************************************************************
+*
+*      AfterTargetDownload
+*
+* Function description
+*   Event handler routine.
+*
+* Notes
+*   This sample implementation demonstrates the application
+*   initialization on a Cortex-M target.
+*   If no initialization can be done, Target.Reset() may be called.
+*
+**********************************************************************
+*/
+/*
+void AfterTargetDownload (void) {
+
+  unsigned int SP;
+  unsigned int PC;
+  unsigned int VectorTableAddr;
+
+  VectorTableAddr = Elf.GetBaseAddr();
+
+  if (VectorTableAddr != 0xFFFFFFFF) {
+
+    Util.Log("Initializing PC and SP.");
+
+    SP = Target.ReadU32(VectorTableAddr);
+    Target.SetReg("SP", SP);
+
+    PC = Target.ReadU32(VectorTableAddr + 4);
+    Target.SetReg("PC", PC);
+  }
+}
+*/
+
+/*********************************************************************
+*
+*       BeforeTargetDisconnect
+*
+* Function description
+*   Event handler routine. Optional.
+*
+**********************************************************************
+*/
+/*
+void BeforeTargetDisconnect (void) {
+}
+*/
+
+/*********************************************************************
+*
+*       AfterTargetDisconnect
+*
+* Function description
+*   Event handler routine. Optional.
+*
+**********************************************************************
+*/
+/*
+void AfterTargetDisconnect (void) {
+}
+*/
+
+/*********************************************************************
+*
+*       AfterTargetHalt
+*
+* Function description
+*   Event handler routine. Optional.
+*
+**********************************************************************
+*/
+/*
+void AfterTargetHalt (void) {
+}
+*/
+
+/*********************************************************************
+*
+*       BeforeTargetResume
+*
+* Function description
+*   Event handler routine. Optional.
+*
+**********************************************************************
+*/
+/*
+void BeforeTargetResume (void) {
+}
+*/

@@ -1,0 +1,16 @@
+Entry &image_filename
+
+do trc_reset.cmm true ram false
+
+;
+; Setup FSMC with good values
+;
+do trc_ram_selected_cfg.cmm
+
+if "&image_filename"!=""
+(
+  data.load &image_filename
+)
+
+do trc_ram_reload.cmm &image_filename
+

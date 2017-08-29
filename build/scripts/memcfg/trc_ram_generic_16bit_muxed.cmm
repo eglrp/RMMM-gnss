@@ -1,0 +1,8 @@
+;
+; Setup FSMC with good values
+;
+; Value for generic RAM 16bit muxed
+D.S UD:(&fsmcregbase+0x8) %LE %LONG 0x000010d3
+D.S UD:(&fsmcregbase+0xc) %LE %LONG 0x00000404
+
+R.S PC (&fsmcmembase+0x4000000)

@@ -1,0 +1,121 @@
+;--------------------------------------------------------------------------
+;
+;
+;--------------------------------------------------------------------------
+
+ WINPOS 0. 25. 70. 7. 0. 2. W000
+ area.clear
+ area
+
+ local &curTCB
+ local &curList
+ local &curPrio
+
+ local &periodicity
+ local &curStart
+ local &prevDur
+ &periodicity=V.VALUE(xOSStats.periodExpectedDuration)
+ &curStart=V.VALUE(xOSStats.curPeriodStartTime)
+ &prevDur=V.VALUE(xOSStats.prevPeriodDuration)
+
+ print "++++++++++++++++++++++++++++++++++++++++++++++++"
+ Print "OS state : period=&periodicity prevDur=&prevDur curStart=&curStart"
+
+
+ print "---------CURRENT TASK----------"
+ &curTCB=V.VALUE(pxCurrentTCB)
+ gosub displayTask &curTCB
+
+; print "-------------------"
+ &curPrio=0
+ while &curPrio<16.
+ (
+;   print "READY TASKS Prio &curPrio"
+   &curList=V.value(&pxReadyTasksLists[&curPrio])
+   gosub displayTaskList &curList "READY TASKS Prio &curPrio"
+   &curPrio=&curPrio+1
+ )
+
+
+; print "-------------------"
+; print "SUSPENDED TASKS"
+ &curList=V.value(&xSuspendedTaskList)
+ gosub displayTaskList &curList "SUSPENDED TASKS"
+
+; print "-------------------"
+; print "BLOCKED TASKS 1"
+ &curList=V.value(&xDelayedTaskList1)
+ gosub displayTaskList &curList "BLOCKED TASKS 1"
+
+; print "-------------------"
+; print "BLOCKED TASKS 2"
+ &curList=V.value(&xDelayedTaskList2)
+ gosub displayTaskList &curList "BLOCKED TASKS 2"
+
+; print "-------------------"
+; print "READIED TASKS"
+ &curList=V.value(&xPendingReadyList)
+ gosub displayTaskList &curList "READIED TASKS"
+
+ print "-------------------"
+ enddo
+
+displayTaskList:
+	entry &zeList &Label
+  local &zeCurrentItem
+  local &zeStartItem
+  local &zeLastItem
+  local &zeNbOfItem
+  local &done
+  local &zeTCB
+  &done=0
+  &zeLastItem=&zeList+0x8
+  &zeStartItem=Data.long(D:(&zeList+0x4))
+  &zeNbOfItem=Data.long(D:(&zeList+0x0))
+  &zeCurrentItem=&zeStartItem
+  if &zeNbOfItem==0
+    return
+
+  print "---------&Label----------"
+  print "&zeNbOfItem items in List at &zeList. Last at &zeLastItem, start at &zeStartItem"
+  while &done!=1
+  (
+    if &zeCurrentItem!=&zeLastItem
+    (
+      print "ITEM at &zeCurrentItem"
+      &zeTCB=Data.long(D:(&zeCurrentItem+0xC)) ; To reach pvOwner
+      gosub displayTask &zeTCB
+    )
+
+    &zeCurrentItem=Data.long(D:(&zeCurrentItem+0x4)) ; To get Next
+    if &zeCurrentItem==&zeStartItem
+    (
+      &done=1
+    )
+;    else
+;    (
+;      else
+;      (
+;        &zeCurrentItem=Data.long(D:(&zeCurrentItem+0x4))
+;        if &zeCurrentItem==&zeStartItem
+;          &done=1
+;      )
+;    )
+  )
+
+  return
+
+displayTask:
+	entry &zeTCB
+ local &zeTName
+ local &zeTag
+ local &zePreviousDuration
+ local &zeStart
+ local &zeEnd
+ &zeTName=Data.STRing(D:(&zeTCB+0x34))
+ &zeTag=Data.long(D:(&zeTCB+0x50))
+
+ print "TaskCB is (TCB_t *)&zeTCB Name=&zeTName Tag at &zeTag"
+
+  return
+

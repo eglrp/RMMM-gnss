@@ -1,0 +1,45 @@
+add
+menu
+(
+  popup "Memory"
+  (
+    popup "NOR setup"
+    (
+      menuitem "Set generic 16bit muxed (default)" "copy ..\memcfg\trc_nor_generic_16bit_muxed.cmm trc_nor_selected_cfg.cmm"
+      menuitem "Set generic 16bit not muxed" "copy ..\memcfg\trc_nor_generic_16bit_notmuxed.cmm trc_nor_selected_cfg.cmm"
+      menuitem "Set generic 8bit muxed" "copy ..\memcfg\trc_nor_generic_8bit_muxed.cmm trc_nor_selected_cfg.cmm"
+      menuitem "Set generic 8bit not muxed" "copy ..\memcfg\trc_nor_generic_8bit_notmuxed.cmm trc_nor_selected_cfg.cmm"
+      separator
+      menuitem "Set Micron M29DW323DB" "copy ..\memcfg\trc_nor_micron_M29DW323DB.cmm trc_nor_selected_cfg.cmm"
+      menuitem "Set Micron M36W0R" "copy ..\memcfg\trc_nor_micron_M36W0R.cmm trc_nor_selected_cfg.cmm"
+      menuitem "Set Micron M36W0T" "copy ..\memcfg\trc_nor_micron_M36W0T.cmm trc_nor_selected_cfg.cmm"
+      menuitem "Set Spansion S29AL016J" "copy ..\memcfg\trc_nor_spansion_S29AL016J.cmm trc_nor_selected_cfg.cmm"
+      menuitem "Set Spansion S29GL064S" "copy ..\memcfg\trc_nor_spansion_S29GL064S.cmm trc_nor_selected_cfg.cmm"
+      menuitem "Set Spansion S29JL032J" "copy ..\memcfg\trc_nor_spansion_S29JL032J.cmm trc_nor_selected_cfg.cmm"
+      menuitem "Set Spansion S29WS064R" "copy ..\memcfg\trc_nor_spansion_S29WS064R.cmm trc_nor_selected_cfg.cmm"
+      menuitem "Set Spansion S71VS064R" "copy ..\memcfg\trc_nor_spansion_S71VS064R.cmm trc_nor_selected_cfg.cmm"
+      menuitem "Set Spansion S98WS064R" "copy ..\memcfg\trc_nor_spansion_S98WS064R.cmm trc_nor_selected_cfg.cmm"
+      menuitem "Set Winbond W29GL064C" "copy ..\memcfg\trc_nor_winbond_W29GL064C.cmm trc_nor_selected_cfg.cmm"
+    )
+    popup "RAM setup"
+    (
+      menuitem "Set generic 16bit muxed (default)" "copy ..\memcfg\trc_ram_generic_16bit_muxed.cmm trc_ram_selected_cfg.cmm"
+      menuitem "Set generic 16bit not muxed (default)" "copy ..\memcfg\trc_ram_generic_16bit_notmuxed.cmm trc_ram_selected_cfg.cmm"
+      menuitem "Set generic 8bit muxed (default)" "copy ..\memcfg\trc_ram_generic_8bit_muxed.cmm trc_ram_selected_cfg.cmm"
+      menuitem "Set generic 8bit not muxed (default)" "copy ..\memcfg\trc_ram_generic_8bit_notmuxed.cmm trc_ram_selected_cfg.cmm"
+      separator
+      menuitem "Set ISSI IS67WVExx16EBLL" "copy ..\memcfg\trc_ram_issi_IS67WVExx16EBLL.cmm trc_ram_selected_cfg.cmm"
+      menuitem "Set Micron M36W0R" "copy ..\memcfg\trc_ram_micron_M36W0R.cmm trc_ram_selected_cfg.cmm"
+      menuitem "Set Micron M36W0T" "copy ..\memcfg\trc_ram_micron_M36W0T.cmm trc_ram_selected_cfg.cmm"
+      menuitem "Set Spansion S71VS064R" "copy ..\memcfg\trc_ram_spansion_S71VS064R.cmm trc_ram_selected_cfg.cmm"
+      menuitem "Set Spansion S98WS064R" "copy ..\memcfg\trc_ram_spansion_S98WS064R.cmm trc_ram_selected_cfg.cmm"
+    )
+    menuitem "Erase NOR code (1MB)" "do trc_nor_flasher.cmm erase (&fsmcmembase)++0xfffff"
+    menuitem "Erase NOR NVM data (1MB)" "do trc_nor_flasher.cmm erase (&fsmcmembase+0x100000)++0xfffff"
+    menuitem "Erase NOR completely (2MB)" "do trc_nor_flasher.cmm erase (&fsmcmembase)++0x1fffff"
+    separator
+    menuitem "Erase SQI code (1MB)" "do trc_sqi_erase.cmm (&sqimembase) 0xfffff"
+    menuitem "Erase SQI NVM data (1MB)" "do trc_sqi_erase.cmm (&sqimembase+0x100000) 0xfffff"
+    menuitem "Erase SQI code and data (2MB)" "do trc_sqi_erase.cmm (&sqimembase) 0x1fffff"
+  )
+)

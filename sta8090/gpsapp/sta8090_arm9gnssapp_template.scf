@@ -1,0 +1,205 @@
+GPSAPP_LR LR_CODE_BASE LR_CODE_SIZE
+{
+  CODE LR_CODE_BASE LR_CODE_SIZE
+  {
+    *.o                       (reset_vector_area, +First)
+    *.o                       (InRoot$$Sections)
+    *.o                       ( GENERIC_NORELOC_REGION)
+
+    .ANY                      ( +RO)
+  }
+
+  NVM_DATA XR_NVM_DATA_REGION XR_NVM_DATA_SIZE
+  {
+    *.o                       ( NVM_DATA_REGION, UNINIT)
+  }
+
+  ITCM_AREA 0x0
+  {
+    ; OS20 specific region
+    *.o                       ( os20_vector_table, +First)
+
+    *.o                       ( OS_ISR_REGION)
+    interrupti.o              ( +RO)
+    kerneli.o                 ( +RO)
+    ostime.o                  ( +RO)
+
+    ; Region for ISRs for generic, OS and BSP needed code
+    svc.o                     ( +RO)
+    svci.o                    ( +RO)
+    *.o                       ( OS_FAST_REGION)
+    *.o                       ( GENERIC_CODE_ISR_REGION)
+    *.o                       ( GENERIC_DATA_ISR_REGION)
+    *.o                       ( MTU_ISR_REGION)
+    *.o                       ( VIC_ISR_REGION)
+    *.o                       ( DATA_ISR_REGION)
+
+    ; Region for ISRs for GNSS mandatory LLDs and related services
+    *.o                       ( GNSSDSP_ISR_REGION)
+    *.o                       ( SSP_ISR_REGION)
+
+    ; Region for ISRs for optional LLDs and related services
+    #if ( DR_ON == 1 )
+    *.o                       ( I2C_ISR_REGION)
+    #endif
+
+    *.o                       ( CAN_ISR_REGION)
+    *.o                       ( ADC_ISR_REGION)
+    *.o                       ( UART_ISR_REGION)
+    *.o                       ( USB_ISR_REGION)
+    *.o                       ( GPIO_ISR_REGION)
+
+    ;*.o                       ( EFT_ISR_REGION)
+    ;*.o                       ( MSP_ISR_REGION)
+
+    // OS20 to OS wrapper code needed in ISRs
+    *OS20toOS_*.o             ( +RO)
+
+    ; ARM Lib code needed in ISRs
+    aeabi_sdiv.o              ( +RO)
+
+    ; NVM handling related
+    #ifdef NVM_RAM
+    gps_nvm_backup.o          ( +RO)
+    #endif
+
+    #ifdef NVM_NOR
+    ; Driver
+    lld_fsmc*.o               ( +RO)
+    ; service
+    svc_fsmc.o                ( FLASH_MODIFY_REGION)
+    #endif
+
+    #if defined( NVM_SQI )
+    ; Driver
+    lld_sqi*.o                ( +RO)
+    ; service
+    svc_sqi.o                 ( FLASH_MODIFY_REGION)
+    #endif
+  }
+
+  #if ( GNSSLIB_FAST == 1 )
+  ITCM_GNSSFAST_AREA +0
+  {
+    ; printf sub-procedures used in gnss_debug_msg()
+    c89vsnprintf.o            ( +RO)
+    _printf*.o                ( +RO)
+    __printf*.o               ( +RO)
+    _sputc.o                  ( +RO)
+    strlen.o                  ( +RO)
+    *.o                       ( GNSS_FAST_REGION)
+  }
+  #endif
+
+  #if ( STAGPS_FAST == 1 )
+  ITCM_STAGPSFAST_AREA +0
+  {
+    stagps_derivative.o       ( +RO)
+    stagps_gravity.o          ( +RO)
+
+    fixpoint.o                ( STAGPS_FAST_REGION)
+  }
+  #endif
+
+  #if ( STAGPS_FAST == 1 )  || ( GNSSLIB_FAST == 1 )
+  ITCM_ARMLIBS_AREA +0
+  {
+    *fz_5s.l                  ( +RO)
+    lludiv5.o                 ( +RO)
+    llsdiv.o                  ( +RO)
+    cos.o                     ( +RO)
+    sin.o                     ( +RO)
+    sqrt.o                    ( +RO)
+    rt_memcpy_w.o             ( +RO)
+    rred.o                    ( +RO)
+    cos_i.o                   ( +RO)
+    sin_i.o                   ( +RO)
+    poly.o                    ( +RO)
+    atan.o                    ( +RO)
+    atan2.o                   ( +RO)
+  }
+  #endif
+
+  #if ( BIN_IMAGE_FAST == 1 )
+  ITCM_BIN_IMAGE_FAST_AREA +0
+  {
+    *.o                       ( BIN_IMAGE_FAST_REGION)
+  }
+  #endif
+
+  ITCM_DATA_AREA +0
+  {
+    position.o                ( +RW, +ZI)
+    fix.o                     ( +RW, +ZI)
+    waas_correction.o         ( +ZI)
+    waas_iono.o               ( +RW, +ZI)
+
+    #if ( DR_ON == 1 )
+    dr_api.o                  ( +RW, +ZI)
+    dr_fix.o                  ( +RW, +ZI)
+    dr_kal.o                  ( +RW, +ZI)
+    dr_pr.o                   ( +RW, +ZI)
+    dr_plugin.o               ( +RW, +ZI)
+    dr_sensors_api.o          ( +RW, +ZI)
+    stbin.o                   ( +RW, +ZI)
+    xtal_manager.o            ( +RW, +ZI)
+    #endif
+  }
+
+  ITCM_AREA_END (0x40000-DATA_TCM_SIZE) EMPTY 0x0
+  {
+  }
+
+  DTCM_AREA DATA_TCM_START DATA_TCM_SIZE
+  {
+    *.o                       ( +RW, +ZI)
+    svc_usb.o                 ( +RO-DATA)
+  }
+
+  #if( OS_HEAP_AREA_SIZE == 0)
+  OS_HEAP_AREA +0 EMPTY 0x0
+  {
+  }
+
+  OS_STACK_AREA (DATA_TCM_START+DATA_TCM_SIZE) EMPTY 0x0
+  {
+  }
+  #else
+  OS_HEAP_AREA OS_HEAP_AREA_START EMPTY 0x0
+  {
+  }
+
+  OS_STACK_AREA (OS_HEAP_AREA_START+OS_HEAP_AREA_SIZE) EMPTY 0x0
+  {
+  }
+  #endif
+
+  DTCM_AREA_LIMIT (DATA_TCM_START+DATA_TCM_SIZE) EMPTY 0x0
+  {
+  }
+
+  #if ( _WATCH_MODE_TEST_ == 1)
+  SRAM_TEST_AREA 0x40000000 0x1500
+  {
+    *.o                       ( SRAM_TEST)
+  }
+  SRAM_TEST_DATA_AREA 0x40001500 0x20
+  {
+    *.o                       ( SRAM_TEST_DATA)
+  }
+  #else
+  SRAM_AREA 0x40000000 0x7C00
+  {
+    *.o                       ( SRAM_AREA)
+  }
+  SRAM2_AREA 0x30100000 0x800
+  {
+    *.o                       ( SRAM2_AREA)
+  }
+  #endif
+
+  SRAM_STDBY_AREA 0x40007C00  UNINIT 0x400
+  {
+    *.o                  ( SRAM_STDBY_DATA)
+  }
+}

@@ -1,0 +1,6 @@
+12:02:22 **** Build of configuration SoC SQI(SQI) for project gnssapp_demo_freertos_gae ****
+make -j4 clean 
+Executing clean on target soc_sqi_sqi
+
+12:02:23 Build Finished (took 566ms)
+

@@ -1,0 +1,18 @@
+winclear
+
+winpos 0.0 0.0 85. 64. 15. 1. w000
+wintabs 10. 10. 25. 62.
+data.list 
+
+winpos 130.0 34.917 48. 31. 0. 0. w002
+register
+
+winpos 89.286 0.0 89. 16. 0. 0. w001
+do trc_percfg.cmm
+per.view
+
+winpos 89.286 20.25 89. 9. 25. 1. w003
+wintabs 13. 0. 0. 0. 0. 0. 0.
+break.list
+
+mode.hll

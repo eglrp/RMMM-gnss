@@ -1,0 +1,8 @@
+;
+; Setup FSMC with good values
+;
+; Value for Spansion S98WS064R RAM
+D.S UD:(&fsmcregbase+0x8) %LE %LONG 0x000010d1
+D.S UD:(&fsmcregbase+0xc) %LE %LONG 0x00000311
+
+R.S PC (&fsmcmembase+0x4000000)

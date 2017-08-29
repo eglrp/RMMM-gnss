@@ -1,0 +1,16 @@
+/*********************************************************************************************
+   FILE:          POW_app.h
+----------------------------------------------------------------------------------------------
+   COPYRIGHT:     (c) 2016 STMicroelectronics
+**********************************************************************************************/
+
+extern typedef struct Config
+{
+    tUInt fix_period_s;
+    tUInt report_every_n_fixes;
+    tUInt fleet_id;
+
+}Config;
+
+extern void pow_app_init(gpOS_partition_t *part);
+extern Config config;
