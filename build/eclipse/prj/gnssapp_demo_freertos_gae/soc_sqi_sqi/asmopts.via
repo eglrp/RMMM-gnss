@@ -1,2 +1,0 @@
--c -Os -g -gdwarf-2 -mcpu=arm946e-s -mtune=arm946e-s -march=armv5te -mfloat-abi=soft -mthumb-interwork
--IC:/Work/workspace/sta8090_gnssapp_230_84914/include/sta8090/gnu -IC:/Work/workspace/sta8090_gnssapp_230_84914/os/freeRTOS/portable/gnu

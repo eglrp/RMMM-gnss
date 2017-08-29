@@ -1,8 +1,0 @@
-;
-; Setup FSMC with good values
-;
-; Value for generic RAM 8bit not muxed
-D.S UD:(&fsmcregbase+0x8) %LE %LONG 0x000010c1
-D.S UD:(&fsmcregbase+0xc) %LE %LONG 0x00000404
-
-R.S PC (&fsmcmembase+0x4000000)

@@ -1,8 +1,0 @@
-;
-; Setup FSMC with good values
-;
-; Value for Spansion S71VS064R RAM
-D.S UD:(&fsmcregbase+0x8) %LE %LONG 0x000030d7
-D.S UD:(&fsmcregbase+0xc) %LE %LONG 0x00000211
-
-R.S PC (&fsmcmembase+0x4000000)

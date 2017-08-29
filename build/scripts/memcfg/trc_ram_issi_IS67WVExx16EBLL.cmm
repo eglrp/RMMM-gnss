@@ -1,8 +1,0 @@
-;
-; Setup FSMC with good values
-;
-; Value for ISSI IS67WVExx16EBLL RAM
-D.S UD:(&fsmcregbase+0x8) %LE %LONG 0x000030d1
-D.S UD:(&fsmcregbase+0xc) %LE %LONG 0x00000201
-
-R.S PC (&fsmcmembase+0x4000000)
