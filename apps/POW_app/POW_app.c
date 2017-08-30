@@ -77,6 +77,30 @@ static void main_activity(tUInt round);
 /*****************************************************************************
    function implementations
  *****************************************************************************/
+/**
+ *
+ **/
+static void _get_time( char * buffer )
+{
+  tChar out_msg[50];
+  tInt index;
+  gnss_time_t gnss_time;
+  gpOS_clock_t cpu_time;
+  rtc_status_t rtc_status; /*RTC_STATUS_INVALID,   RTC_STATUS_STORED,   RTC_STATUS_APPROXIMATE */
+  time_validity_t time_validity;
+  tInt    year;
+  tInt    month;
+  tInt    day;
+  tInt    hours;
+  tInt    mins;
+  tInt    secs;
+  tInt    msecs;
+
+  gnss_rtc_get_time( &gnss_time, &cpu_time, &rtc_status, &time_validity );
+  gnss_get_utc_time( gnss_time.tow, &hours, &mins, &secs, &msecs );
+  gnss_get_date( gnss_time.week_n, gnss_time.tow, &year, &month, &day );
+  sprintf(buffer, "\"%02d/%02d/%02d,%02d:%02d:%02d+08\" %d,%d", year % 100, month,day,hours, mins, secs,  rtc_status, time_validity);
+}
 
 /* Creation of "POW_app_task" */
 void pow_app_init(gpOS_partition_t *part)
@@ -273,6 +297,7 @@ static gpOS_task_exit_status_t demo_app_process( void *p )
     gpOS_wakelock_acquire(pow_manager.wakelock_id);
   }
 }
+
 /* Main application activity */
 static void main_activity(tUInt round)
 {
@@ -293,17 +318,22 @@ static void main_activity(tUInt round)
 
   gnss_fix_store_local(NULL);
 
-  if(gnss_fix_get_pos_status() != NO_FIX)
+  if(gnss_fix_get_pos_status() == NO_FIX)
+  {
+    GPS_DEBUG_MSG( ( "[CLOE_demo] No FIX yet \r\n" ));
+  }
+  else
   {
     position_t pos;
     velocity_t vel;
     char buffer[27];
     _clibs_memset(buffer, 0, sizeof(buffer));
     at_get_network_time(buffer);
+    GPS_DEBUG_MSG( ( "[CLOE_demo] network time : %s\r\n", buffer));
+    _get_time ( (char*) &buffer);
+    GPS_DEBUG_MSG( ( "[CLOE_demo] gps time : %s\r\n", buffer));
 
     gnss_fix_get_fil_pos_vel_local(&pos, &vel, NULL);
-
-
     GPS_DEBUG_MSG( ( "[CLOE_demo] Position : %.5f, %.5f detected\r\n",pos.latitude, pos.longitude  ));
     GPS_DEBUG_MSG( ( "[CLOE_demo] Saving... \r\n"  ));
     positions[n_positions].pos=pos;
@@ -322,14 +352,12 @@ static void main_activity(tUInt round)
       {
         GPS_DEBUG_MSG( ( "[CLOE_demo] Couldn't send the positions \r\n"  ));
       }
-      if(n_positions>=POSITIONS_ARRAY_SIZE){
+
+      if(n_positions>=POSITIONS_ARRAY_SIZE)
+      {
         n_positions=0;
       }
     }
-  }
-
-  else{
-    GPS_DEBUG_MSG( ( "[CLOE_demo] No FIX yet \r\n" ));
   }
 
 }

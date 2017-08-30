@@ -229,11 +229,7 @@ boolean_t send_at_wait_response(char *atc, char * resp, int max_retries){
     _clibs_memset(buffer, 0, sizeof(buffer));
     read_at(buffer, sizeof(buffer));
   }
-
-  if( !status )
-    GPS_DEBUG_MSG(( "[CLOE_demo] resp: \"%s\" not found\r\n", resp));
-
-    return status;
+  return status;
 }
 
 boolean_t send_at_read_response(char *atc, char * resp, int max_retries, char * output){
