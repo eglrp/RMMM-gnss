@@ -99,7 +99,7 @@ static void _get_time( char * buffer )
   gnss_rtc_get_time( &gnss_time, &cpu_time, &rtc_status, &time_validity );
   gnss_get_utc_time( gnss_time.tow, &hours, &mins, &secs, &msecs );
   gnss_get_date( gnss_time.week_n, gnss_time.tow, &year, &month, &day );
-  sprintf(buffer, "\"%02d/%02d/%02d,%02d:%02d:%02d+08\" %d,%d", year % 100, month,day,hours, mins, secs,  rtc_status, time_validity);
+  sprintf(buffer, "\"%02d/%02d/%02d,%02d:%02d:%02d+00\" %d,%d", year % 100, month,day,hours, mins, secs,  rtc_status, time_validity);
 }
 
 /* Creation of "POW_app_task" */
